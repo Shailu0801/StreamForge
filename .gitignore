@@ -1,4 +1,16 @@
-venv/
+
+.venv/
 __pycache__/
 *.pyc
 streamforge.db
+
+
+node_modules/
+frontend/node_modules/
+
+
+dist/
+frontend/dist/
+
+
+.DS_Store
