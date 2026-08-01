@@ -1,0 +1,29 @@
+[
+    {
+        "truck_id": "TRK001",
+        "temperature": 7.5,
+        "city": "Delhi",
+        "timestamp": "2026-07-30T10:29:00Z",
+        "active": true
+    },
+    {
+        "truck_id": "TRK-001",
+        "temperature": 9.2,
+        "city": "Delhi",
+        "timestamp": "2026-07-30T10:30:00Z",
+        "active": true
+    },
+    {
+        "truck_id": "TRK-002",
+        "temperature": 9.2,
+        "city": "Mumbai",
+        "timestamp": "2026-07-30T10:31:00Z",
+        "active": true
+    },
+    {
+        "temperature": 9.2,
+        "city": "Bengaluru",
+        "timestamp": "2026-07-30T10:32:00Z",
+        "active": false
+    }
+]
