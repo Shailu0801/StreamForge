@@ -1,4 +1,15 @@
 import json
+from datetime import datetime
+
+def get_window_start(timestamp):
+    event_time = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+    window_minute = event_time.minute - (event_time.minute % 5)
+
+    return event_time.replace(
+        minute= window_minute,
+        second=0,
+        microsecond=0
+    ).isoformat()
 
 
 def get_status(temperature, active):
@@ -45,28 +56,31 @@ for event in truck_data:
     except ValueError as error:
         print(f"Invalid truck event for id {truck_id}:{error}")
 
-temperature_by_truck = {}
+temperature_by_window = {}
 for event in processed_events:
     if event["status"] == "inactive":
         continue
 
     truck_id = event["truck_id"]
+    window_start = get_window_start(event["timestamp"])
+    key = (truck_id,window_start)
     temperature = event["temperature"]
 
-    if truck_id not in temperature_by_truck:
-        temperature_by_truck[truck_id] = []
+    if key not in temperature_by_window:
+        temperature_by_window[key] = []
 
-    temperature_by_truck[truck_id].append(temperature)
+    temperature_by_window[key].append(temperature)
 
-print("\n Average temperature per truck:")
+print("\n 5 minute Average temperature per truck:")
 
 
-for truck_id, temperatures in temperature_by_truck.items():
+for (truck_id,window_start), temperatures in temperature_by_window.items():
     average_temperature = sum(temperatures)/len(temperatures) 
     average_status = get_status(average_temperature,True)
 
     print(
         f"Truck_id: {truck_id} |"
+        f"Window: {window_start} |"
         f"Average {average_temperature:.2f} |"
         f"{average_status}"
     )
