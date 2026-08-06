@@ -9,5 +9,7 @@ def get_status():
         "backend": "Running",
         "database": "Connected",
         "kafka": "Not Connected",
-        "consumer": "Not Running"
+        "consumer": "Not Running",
+        "api_version": "1.0",
+        "service": "StreamForge Backend"
     }
