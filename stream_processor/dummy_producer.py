@@ -36,6 +36,13 @@ truck_events = [
         "city": "Bengaluru",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "active": True
+    },
+    {
+        "truck_id": "TRK-001",
+        "temperature": 9.5,
+        "city": "Delhi",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "active": True
     }
 ]
 

@@ -2,7 +2,7 @@ import json
 
 from confluent_kafka import Consumer
 from config import BOOTSTRAP_SERVERS, TOPIC_NAME, GROUP_ID
-from processor import process_event
+from processor import process_event, get_status
 
 consumer = Consumer({
     "bootstrap.servers": BOOTSTRAP_SERVERS,
@@ -14,7 +14,7 @@ consumer.subscribe([TOPIC_NAME])
 
 print(f"Waiting for messages from '{TOPIC_NAME}'...")
 print("Press Ctrl + C to stop.\n")
-
+temperatures_by_window = {}
 try:
     while True:
         message = consumer.poll(1.0)
@@ -28,6 +28,29 @@ try:
         try:
             event = json.loads(message.value().decode("utf-8"))
             processed_event = process_event(event)
+            if processed_event["status"] != "inactive":
+                key = (
+                    processed_event["truck_id"],
+                    processed_event["window_start"]
+                )
+
+                if key not in temperatures_by_window:
+                    temperatures_by_window[key] = []
+
+                temperatures_by_window[key].append(
+                    processed_event["temperature"]
+                )
+
+                temperatures = temperatures_by_window[key]
+                average_temperature = sum(temperatures) / len(temperatures)
+                average_status = get_status(average_temperature, True)
+
+                print(
+                    f"Aggregate | {processed_event['truck_id']} | "
+                    f"Window: {processed_event['window_start']} | "
+                    f"Average: {average_temperature:.2f}°C | "
+                    f"{average_status}"
+                )
 
             print(
                 f"Processed | "
