@@ -24,7 +24,7 @@ def delivery(err, msg):
         )
 
 
-TOTAL_EVENTS = 10
+TOTAL_EVENTS = 1000
 
 for i in range(TOTAL_EVENTS):
     event = generate_event()
