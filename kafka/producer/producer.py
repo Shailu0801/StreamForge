@@ -24,22 +24,18 @@ def delivery(err, msg):
         )
 
 
-while True:
+TOTAL_EVENTS = 10
 
+for i in range(TOTAL_EVENTS):
     event = generate_event()
 
     producer.produce(
-
         TOPIC,
-
         key=event["truck_id"],
-
-        value=json.dumps(event),
-
-        callback=delivery
-
+        value=json.dumps(event)
     )
 
-    producer.poll(0)
+producer.flush()
 
-    time.sleep(0.1)
+print(f"Sent {TOTAL_EVENTS} events successfully.")
+
