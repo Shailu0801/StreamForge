@@ -1,50 +1,51 @@
-import json
-truck =[
-    {
-        "truck_id" : "TRK001",
-        "temperature" : 7.5,
-        "city" : "Delhi",
-        "timestamp": "2026-07-30T10:29:00Z",
-        "active" : True
-    },
-    {
-        "truck_id": "TRK-001",
-        "temperature": 9.2,
-        "city": "Delhi",
-        "timestamp": "2026-07-30T10:30:00Z",
-        "active" : True
-    },
-    {
-        "truck_id": "TRK-002",
-        "temperature": 9.2,
-        "city": "Mumbai",
-        "timestamp": "2026-07-30T10:31:00Z",
-        "active" : True
-    },
-    {
-        "truck_id": "TRK-003",
-        "temperature": 9.2,
-        "city": "Bengaluru",
-        "timestamp": "2026-07-30T10:32:00Z",
-        "active" : False
-    }
-]    
+from datetime import datetime
 
 
+def get_status(temperature, active):
+    if not active:
+        return "inactive"
+    if temperature < 8:
+        return "normal"
+    if temperature <= 10:
+        return "warning"
+    return "critical"
 
 
-with open("truck.json","w") as f:
-    json.dump(truck,f,indent=4)
+def get_window_start(timestamp):
+    event_time = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+    window_minute = event_time.minute - (event_time.minute % 5)
 
-with open("truck.json","r") as f:
-    truck_data = json.load(f)
+    return event_time.replace(
+        minute=window_minute,
+        second=0,
+        microsecond=0
+    ).isoformat()
 
-for event in truck_data:
-    truck_id = event.get("truck_id","unknown")
+
+def process_event(event):
+    truck_id = event.get("truck_id")
+
+    if not truck_id:
+        raise ValueError("missing truck_id")
+
     try:
-        truck_id = event["truck_id"]
         temperature = event["temperature"]
-        print(f"{truck_id} | {temperature} C")
-
+        active = event["active"]
+        timestamp = event["timestamp"]
     except KeyError as error:
-        print("Invalid truck event, missing:",error,"for id",truck_id)
+        raise ValueError(f"missing {error}") from error
+
+    if isinstance(temperature, bool) or not isinstance(temperature, (int, float)):
+        raise ValueError("temperature must be a number")
+
+    if not isinstance(active, bool):
+        raise ValueError("active must be true or false")
+
+    return {
+        "truck_id": truck_id,
+        "temperature": temperature,
+        "city": event.get("city", "unknown"),
+        "timestamp": timestamp,
+        "window_start": get_window_start(timestamp),
+        "status": get_status(temperature, active)
+    }
