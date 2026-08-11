@@ -1,14 +1,12 @@
 from datetime import datetime
 
 
-def get_status(temperature, active):
-    if not active:
-        return "inactive"
-    if temperature < 8:
-        return "normal"
-    if temperature <= 10:
+def get_status(temperature):
+    if temperature < 0 or temperature > 10:
+        return "critical"
+    if temperature < 2 or temperature > 8:
         return "warning"
-    return "critical"
+    return "normal"
 
 
 def get_window_start(timestamp):
@@ -30,7 +28,8 @@ def process_event(event):
 
     try:
         temperature = event["temperature"]
-        active = event["active"]
+        speed = event["speed"]
+        fuel = event["fuel"]
         timestamp = event["timestamp"]
     except KeyError as error:
         raise ValueError(f"missing {error}") from error
@@ -38,14 +37,12 @@ def process_event(event):
     if isinstance(temperature, bool) or not isinstance(temperature, (int, float)):
         raise ValueError("temperature must be a number")
 
-    if not isinstance(active, bool):
-        raise ValueError("active must be true or false")
-
     return {
         "truck_id": truck_id,
         "temperature": temperature,
-        "city": event.get("city", "unknown"),
+        "speed": speed,
+        "fuel": fuel,
         "timestamp": timestamp,
         "window_start": get_window_start(timestamp),
-        "status": get_status(temperature, active)
+        "status": get_status(temperature)
     }

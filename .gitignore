@@ -14,3 +14,20 @@ frontend/dist/
 
 
 .DS_Store
+
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python test and coverage files
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# Windows files
+Thumbs.db
