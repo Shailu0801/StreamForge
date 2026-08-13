@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from sqlalchemy import text
-from kafka import KafkaAdminClient
+from kafka import  KafkaAdminClient
 
 from app.database.database import SessionLocal
 

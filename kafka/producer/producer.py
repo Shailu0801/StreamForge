@@ -23,19 +23,37 @@ def delivery(err, msg):
             f"Partition:{msg.partition()}"
         )
 
+while True:
 
-TOTAL_EVENTS = 1000
-
-for i in range(TOTAL_EVENTS):
     event = generate_event()
 
     producer.produce(
+
         TOPIC,
+
         key=event["truck_id"],
-        value=json.dumps(event)
+
+        value=json.dumps(event),
+
+        callback=delivery
+
     )
 
-producer.flush()
+    producer.poll(0)
 
-print(f"Sent {TOTAL_EVENTS} events successfully.")
+    time.sleep(0.1)
+# TOTAL_EVENTS = 1000
+
+# for i in range(TOTAL_EVENTS):
+#     event = generate_event()
+
+#     producer.produce(
+#         TOPIC,
+#         key=event["truck_id"],
+#         value=json.dumps(event)
+#     )
+
+# producer.flush()
+
+# print(f"Sent {TOTAL_EVENTS} events successfully.")
 
