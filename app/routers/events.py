@@ -5,7 +5,6 @@ from app.schemas.event import Event
 from app.database.database import SessionLocal
 from app.database.models import Event as EventModel
 
-
 router = APIRouter()
 
 

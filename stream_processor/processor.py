@@ -38,11 +38,12 @@ def process_event(event):
         raise ValueError("temperature must be a number")
 
     return {
-        "truck_id": truck_id,
-        "temperature": temperature,
-        "speed": speed,
-        "fuel": fuel,
-        "timestamp": timestamp,
-        "window_start": get_window_start(timestamp),
-        "status": get_status(temperature)
-    }
+    "truck_id": truck_id,
+    "temperature": temperature,
+    "speed": speed,
+    "fuel": fuel,
+    "location": event.get("location", "unknown"),
+    "timestamp": timestamp,
+    "window_start": get_window_start(timestamp),
+    "status": get_status(temperature)
+}
