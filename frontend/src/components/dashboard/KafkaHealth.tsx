@@ -1,53 +1,91 @@
+import { useEffect, useState } from "react";
 import Card from "../common/Card";
-import { kafkaHealth } from "../../data/kafka";
+import { getKafkaHealth } from "../../api/backend";
+import type { KafkaHealth as KafkaHealthData } from "../../api/backend";
 
 const KafkaHealth = () => {
+  const [health, setHealth] = useState<KafkaHealthData | null>(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadKafkaHealth = async () => {
+      try {
+        const data = await getKafkaHealth();
+        setHealth(data);
+        setError("");
+      } catch (err) {
+        console.error(err);
+        setError("Unable to connect to Kafka");
+      }
+    };
+
+    loadKafkaHealth();
+
+    const interval = setInterval(loadKafkaHealth, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <Card>
       <h2 className="text-xl font-semibold text-white mb-6">
         📡 Kafka Health
       </h2>
 
+      {error && (
+        <p className="mb-4 text-red-400">
+          {error}
+        </p>
+      )}
+
       <div className="space-y-4">
-        {kafkaHealth.brokers.map((broker) => (
+        {health?.brokers.map((broker) => (
           <div
-            key={broker.name}
+            key={broker.id}
             className="flex justify-between items-center"
           >
             <span className="text-slate-300">
-              {broker.name}
+              Broker-{broker.id}
             </span>
 
             <span className="text-green-400">
-              🟢 {broker.status}
+              🟢 Online
             </span>
           </div>
         ))}
       </div>
 
-      <div className="border-t border-slate-700 mt-6 pt-6 space-y-3">
-        <div className="flex justify-between">
-          <span className="text-slate-400">Topics</span>
-          <span className="text-white">{kafkaHealth.topics}</span>
-        </div>
+      {health && (
+        <div className="border-t border-slate-700 mt-6 pt-6 space-y-3">
+          <div className="flex justify-between">
+            <span className="text-slate-400">Status</span>
+            <span className="text-green-400">
+              {health.status}
+            </span>
+          </div>
 
-        <div className="flex justify-between">
-          <span className="text-slate-400">Partitions</span>
-          <span className="text-white">{kafkaHealth.partitions}</span>
-        </div>
+          <div className="flex justify-between">
+            <span className="text-slate-400">Topics</span>
+            <span className="text-white">
+              {health.topics}
+            </span>
+          </div>
 
-        <div className="flex justify-between">
-          <span className="text-slate-400">Consumer Lag</span>
-          <span className="text-white">{kafkaHealth.consumerLag}</span>
-        </div>
+          <div className="flex justify-between">
+            <span className="text-slate-400">Topic Names</span>
+            <span className="text-white">
+              {health.topic_names.join(", ")}
+            </span>
+          </div>
 
-        <div className="flex justify-between">
-          <span className="text-slate-400">Throughput</span>
-          <span className="text-blue-400 font-semibold">
-            {kafkaHealth.throughput}
-          </span>
+          <div className="flex justify-between">
+            <span className="text-slate-400">Partitions</span>
+            <span className="text-white">
+              {health.partitions}
+            </span>
+          </div>
         </div>
-      </div>
+      )}
     </Card>
   );
 };

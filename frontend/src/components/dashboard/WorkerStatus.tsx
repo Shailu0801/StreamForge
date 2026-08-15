@@ -1,65 +1,134 @@
+import { useEffect, useState } from "react";
 import Card from "../common/Card";
-import { workers } from "../../data/workers";
+
+interface SystemStatus {
+  backend: string;
+  database: string;
+  kafka: string;
+  consumer: string;
+  service: string;
+  api_version: string;
+}
 
 const WorkerStatus = () => {
+  const [status, setStatus] = useState<SystemStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/status");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch status");
+        }
+
+        const data: SystemStatus = await response.json();
+        setStatus(data);
+      } catch (error) {
+        console.error("Status API error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStatus();
+
+    const interval = setInterval(fetchStatus, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const getStatusClass = (value: string) => {
+    return value === "Connected" ||
+      value === "Running" ||
+      value === "Running"
+      ? "text-green-400"
+      : "text-red-400";
+  };
+
   return (
     <Card>
-      <h2 className="text-xl font-semibold text-white mb-6">
-        👷 Worker Status
+      <h2 className="mb-6 text-xl font-semibold text-white">
+        ⚙️ System Status
       </h2>
 
-      <div className="space-y-6">
-        {workers.map((worker) => (
-          <div
-            key={worker.id}
-            className="border-b border-slate-700 pb-5 last:border-none"
-          >
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-white font-semibold">
-                {worker.id}
-              </h3>
+      {loading && !status ? (
+        <p className="text-slate-400">
+          Loading status...
+        </p>
+      ) : status ? (
+        <div className="space-y-4">
 
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  worker.status === "Running"
-                    ? "bg-green-500/20 text-green-400"
-                    : "bg-red-500/20 text-red-400"
-                }`}
-              >
-                {worker.status}
+          <div className="flex items-center justify-between">
+            <span className="text-slate-400">
+              Backend
+            </span>
+
+            <span className={getStatusClass(status.backend)}>
+              ● {status.backend}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-slate-400">
+              Database
+            </span>
+
+            <span className={getStatusClass(status.database)}>
+              ● {status.database}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-slate-400">
+              Kafka
+            </span>
+
+            <span className={getStatusClass(status.kafka)}>
+              ● {status.kafka}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-slate-400">
+              Consumer
+            </span>
+
+            <span className={getStatusClass(status.consumer)}>
+              ● {status.consumer}
+            </span>
+          </div>
+
+          <div className="border-t border-slate-700 pt-4">
+
+            <div className="flex items-center justify-between">
+              <span className="text-slate-400">
+                Service
+              </span>
+
+              <span className="text-white">
+                {status.service}
               </span>
             </div>
 
-            <div className="mb-3">
-              <div className="flex justify-between text-sm text-slate-400">
-                <span>CPU</span>
-                <span>{worker.cpu}%</span>
-              </div>
+            <div className="mt-3 flex items-center justify-between">
+              <span className="text-slate-400">
+                API Version
+              </span>
 
-              <div className="w-full h-2 bg-slate-700 rounded-full mt-1">
-                <div
-                  className="h-2 rounded-full bg-blue-500"
-                  style={{ width: `${worker.cpu}%` }}
-                />
-              </div>
+              <span className="text-white">
+                {status.api_version}
+              </span>
             </div>
 
-            <div>
-              <div className="flex justify-between text-sm text-slate-400">
-                <span>Memory</span>
-                <span>{worker.memory}%</span>
-              </div>
-
-              <div className="w-full h-2 bg-slate-700 rounded-full mt-1">
-                <div
-                  className="h-2 rounded-full bg-cyan-400"
-                  style={{ width: `${worker.memory}%` }}
-                />
-              </div>
-            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <p className="text-red-400">
+          Unable to connect to backend
+        </p>
+      )}
     </Card>
   );
 };
