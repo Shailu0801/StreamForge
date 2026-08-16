@@ -31,3 +31,8 @@ htmlcov/
 
 # Windows files
 Thumbs.db
+# Local state and test/backup files
+streamforge_state/
+frontend/src/pages/*.backup.tsx
+stream_processor/*.backup.py
+test_timestamp.py
