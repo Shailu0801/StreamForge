@@ -35,41 +35,110 @@ export interface EventChartPoint {
   events: number;
 }
 
+
+// ============================================================
+// PROMETHEUS METRICS
+// ============================================================
+
+export interface PrometheusMetrics {
+  status: string;
+  events_processed: number;
+  events_per_second: number;
+  processing_lag: number;
+  processing_errors: number;
+  consumer_running: number;
+}
+
+
+// ============================================================
+// DATABASE METRICS
+// ============================================================
+
 export async function getMetrics(): Promise<Metrics> {
-  const response = await fetch(`${API_BASE_URL}/metrics`);
+  const response = await fetch(
+    `${API_BASE_URL}/metrics`
+  );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch metrics");
+    throw new Error(
+      "Failed to fetch metrics"
+    );
   }
 
   return response.json();
 }
+
+
+// ============================================================
+// KAFKA HEALTH
+// ============================================================
 
 export async function getKafkaHealth(): Promise<KafkaHealth> {
-  const response = await fetch(`${API_BASE_URL}/kafka-health`);
+  const response = await fetch(
+    `${API_BASE_URL}/kafka-health`
+  );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch Kafka health");
+    throw new Error(
+      "Failed to fetch Kafka health"
+    );
   }
 
   return response.json();
 }
+
+
+// ============================================================
+// BACKEND STATUS
+// ============================================================
 
 export async function getBackendStatus(): Promise<BackendStatus> {
-  const response = await fetch(`${API_BASE_URL}/status`);
+  const response = await fetch(
+    `${API_BASE_URL}/status`
+  );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch backend status");
+    throw new Error(
+      "Failed to fetch backend status"
+    );
   }
 
   return response.json();
 }
 
+
+// ============================================================
+// EVENT CHART
+// ============================================================
+
 export async function getEventChart(): Promise<EventChartPoint[]> {
-  const response = await fetch(`${API_BASE_URL}/events/chart`);
+  const response = await fetch(
+    `${API_BASE_URL}/events/chart`
+  );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch event chart");
+    throw new Error(
+      "Failed to fetch event chart"
+    );
+  }
+
+  return response.json();
+}
+
+
+// ============================================================
+// PROMETHEUS METRICS
+// ============================================================
+
+export async function getPrometheusMetrics(): Promise<PrometheusMetrics> {
+  const response = await fetch(
+    `${API_BASE_URL}/prometheus`
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Failed to fetch Prometheus metrics"
+    );
   }
 
   return response.json();

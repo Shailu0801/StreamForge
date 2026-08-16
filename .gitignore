@@ -36,3 +36,5 @@ streamforge_state/
 frontend/src/pages/*.backup.tsx
 stream_processor/*.backup.py
 test_timestamp.py
+
+venv/
