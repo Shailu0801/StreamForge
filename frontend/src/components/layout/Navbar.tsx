@@ -3,7 +3,6 @@ import {
   Moon,
   Search,
   ShieldCheck,
-  UserCircle,
 } from "lucide-react";
 
 import LiveClock from "../common/LiveClock";
@@ -95,22 +94,6 @@ const Navbar = () => {
 
         {/* Live Clock */}
         <LiveClock />
-
-        {/* User Profile */}
-        <div className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900 px-4 py-2 transition hover:border-blue-500/40">
-
-          <UserCircle className="h-10 w-10 text-blue-400" />
-
-          <div>
-            <p className="text-sm font-semibold text-white">
-              Fidha
-            </p>
-
-            <p className="text-xs text-slate-400">
-              Frontend Developer
-            </p>
-          </div>
-        </div>
 
       </div>
     </header>
